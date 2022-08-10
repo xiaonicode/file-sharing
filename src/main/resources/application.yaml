@@ -1,0 +1,8 @@
+server:
+  port: 8197
+  servlet:
+    context-path: /file-sharing
+
+spring:
+  application:
+    name: file-sharing
