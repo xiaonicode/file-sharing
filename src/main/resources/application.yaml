@@ -6,3 +6,36 @@ server:
 spring:
   application:
     name: file-sharing
+  # 指定数据源信息
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://192.168.56.10:3306/file_sharing
+    username: root
+    password: root
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      pool-name: file-sharing-pool
+  # 指定 redis 信息
+  redis:
+    host: 192.168.56.10
+    port: 6379
+  # 配置文件上传信息
+  servlet:
+    multipart:
+      # 启用文件上传, 默认值为 true
+      enabled: true
+      # 指定上传文件允许的最大大小, 默认值为 1MB
+      max-file-size: 1MB
+      # 指定文件上传请求允许的最大大小, 默认值为 10MB
+      max-request-size: 10MB
+      # 指定文件即将写入磁盘的大小阈值, 默认值为 0B
+      file-size-threshold: 1024B
+
+mybatis-plus:
+  # 指定 mybatis 全局配置文件位置
+  config-location: classpath:mybatis-config.xml
+
+logging:
+  # 指定日志级别
+  level:
+    com.xiaonicode.filesharing.mapper: debug
