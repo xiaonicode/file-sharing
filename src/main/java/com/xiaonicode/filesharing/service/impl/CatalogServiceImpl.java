@@ -1,6 +1,8 @@
 package com.xiaonicode.filesharing.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.util.ArrayUtil;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
@@ -11,13 +13,16 @@ import com.xiaonicode.filesharing.mapper.FileRecordMapper;
 import com.xiaonicode.filesharing.pojo.dto.RecycleBinDTO;
 import com.xiaonicode.filesharing.pojo.entity.CatalogEntity;
 import com.xiaonicode.filesharing.pojo.entity.FileRecordEntity;
+import com.xiaonicode.filesharing.pojo.vo.CatalogVO;
 import com.xiaonicode.filesharing.service.CatalogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -224,6 +229,61 @@ public class CatalogServiceImpl implements CatalogService {
 
         // 回收站操作
         operateRecycleBin(subCatalogs, fileRecords, isRecycle, recycled);
+    }
+
+    @Override
+    public CatalogVO[] listCatalogPaths(BigInteger catalogId) {
+        CatalogVO[] catalogPaths = new CatalogVO[]{};
+
+        // 当前文件的目录 ID 为空或者等于 0, 直接返回
+        if (catalogId == null || BigInteger.ZERO.equals(catalogId)) {
+            return catalogPaths;
+        }
+
+        // 获取当前文件所属的直接目录
+        CatalogEntity directCatalog = catalogMapper.selectById(catalogId);
+        if (Objects.nonNull(directCatalog)) {
+            // 获取父目录列表
+            List<CatalogEntity> parentCatalogs = recursionListParentCatalogs(directCatalog, new ArrayList<>());
+
+            // 目录实体类 ==> 目录视图类
+            List<CatalogVO> vos = parentCatalogs.stream()
+                    .map(entity -> BeanUtil.copyProperties(entity, CatalogVO.class))
+                    .collect(Collectors.toList());
+
+            // 反转数组, 使路径正确
+            CollectionUtil.reverse(vos);
+            catalogPaths = ArrayUtil.toArray(vos, CatalogVO.class);
+        }
+        return catalogPaths;
+    }
+
+    /**
+     * 递归获取父目录
+     *
+     * @param currCatalog 当前文件所属的父目录
+     * @param parentCatalogs 当前文件所属的父目录列表
+     * @return 当前文件所属的父目录列表
+     */
+    private List<CatalogEntity> recursionListParentCatalogs(CatalogEntity currCatalog, List<CatalogEntity> parentCatalogs) {
+        // 收集父目录
+        parentCatalogs.add(currCatalog);
+
+        // 根据当前父目录的 ID, 获取父目录的父目录
+        CatalogEntity parentCatalog = catalogMapper.selectById(currCatalog.getParentId());
+
+        Optional.ofNullable(parentCatalog).ifPresent(catalog -> {
+            if (!BigInteger.ZERO.equals(catalog.getParentId())) {
+                // 当前目录的父目录 ID 不为 0 时, 递归获取其父目录
+                recursionListParentCatalogs(catalog, parentCatalogs);
+            } else {
+                // 反之, 将顶级目录加入父目录列表
+                parentCatalogs.add(catalog);
+            }
+        });
+
+        // 返回父目录列表
+        return parentCatalogs;
     }
 
 }

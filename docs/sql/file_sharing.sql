@@ -11,7 +11,7 @@
  Target Server Version : 80027
  File Encoding         : 65001
 
- Date: 15/08/2022 20:06:31
+ Date: 16/08/2022 00:15:17
 */
 
 SET NAMES utf8mb4;
@@ -65,7 +65,7 @@ CREATE TABLE `tb_file_record`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_catalog_id`(`catalog_id` ASC) USING BTREE,
   INDEX `idx_creator_id`(`creator_id` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 13 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '文件记录表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 14 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '文件记录表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of tb_file_record
@@ -73,14 +73,15 @@ CREATE TABLE `tb_file_record`  (
 INSERT INTO `tb_file_record` VALUES (1, 1, 'a.txt', 'xxx', 1, 1, 1, '2022-08-13 18:11:51', '2022-08-14 11:15:24', 0);
 INSERT INTO `tb_file_record` VALUES (2, 2, 'a.txt', 'yyy', 1, 1, 1, '2022-08-13 18:12:21', '2022-08-14 11:15:24', 0);
 INSERT INTO `tb_file_record` VALUES (3, 3, 'b.txt', 'zzz', 1, 1, 1, '2022-08-13 18:13:03', '2022-08-14 11:15:24', 0);
-INSERT INTO `tb_file_record` VALUES (4, 4, 'c.txt', 'ooo', 1, 1, 1, '2022-08-13 18:13:19', '2022-08-14 11:15:24', 0);
+INSERT INTO `tb_file_record` VALUES (4, 4, 'cc.txt', 'ooo', 1, 1, 1, '2022-08-13 18:13:19', '2022-08-14 11:15:24', 0);
 INSERT INTO `tb_file_record` VALUES (5, 0, 'd.txt', 'qqq', 1, 0, 2, '2022-08-13 18:13:53', '2022-08-13 22:47:17', 0);
 INSERT INTO `tb_file_record` VALUES (6, 0, 'a.txt', 'f9f6c4cf0cc84f3182f82dfb584c14c4.txt', 1, 0, 1, '2022-08-14 19:58:13', NULL, 0);
-INSERT INTO `tb_file_record` VALUES (7, 0, 'c.txt', '18178ce2619840d9b21ddddcda677d23.txt', 1, 0, 1, '2022-08-14 20:01:20', NULL, 0);
+INSERT INTO `tb_file_record` VALUES (7, 0, 'ccc.txt', '18178ce2619840d9b21ddddcda677d23.txt', 1, 0, 1, '2022-08-14 20:01:20', NULL, 0);
 INSERT INTO `tb_file_record` VALUES (8, 0, 'd.txt', '08538851f00c48f183a5e24a1734cdbb.txt', 1, 0, 1, '2022-08-14 20:04:51', NULL, 0);
 INSERT INTO `tb_file_record` VALUES (9, 0, 'f.txt', 'a651fc99af52442db43e4e2d051a7dc6.txt', 1, 0, 1, '2022-08-14 20:08:17', NULL, 0);
 INSERT INTO `tb_file_record` VALUES (10, 0, 'g.txt', '4b7e8861282d4242a66a71c2c0ed6caf.txt', 1, 0, 1, '2022-08-14 20:11:13', NULL, 0);
 INSERT INTO `tb_file_record` VALUES (12, 0, 'b.txt', '719ec5fe19204d4da11e42dd34dd4769.txt', 2, 0, 1, '2022-08-14 22:56:11', '2022-08-14 23:10:29', 0);
+INSERT INTO `tb_file_record` VALUES (13, 0, 'c.txt', 'ad0e4632ab4c4aa88a8d4a21279daa0a.txt', 1, 0, 1, '2022-08-15 21:47:47', NULL, 0);
 
 -- ----------------------------
 -- Table structure for tb_user

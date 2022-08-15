@@ -12,13 +12,12 @@ import com.xiaonicode.filesharing.common.exception.FileSharingException;
 import com.xiaonicode.filesharing.common.result.PageInfo;
 import com.xiaonicode.filesharing.common.result.Result;
 import com.xiaonicode.filesharing.common.result.ResultStatus;
+import com.xiaonicode.filesharing.common.util.ZipDownloadUtils;
 import com.xiaonicode.filesharing.pojo.entity.FileRecordEntity;
-import com.xiaonicode.filesharing.pojo.query.CatalogFileQuery;
-import com.xiaonicode.filesharing.pojo.vo.CatalogFileVO;
+import com.xiaonicode.filesharing.pojo.query.FileRecordQuery;
+import com.xiaonicode.filesharing.pojo.vo.FileRecordVO;
 import com.xiaonicode.filesharing.service.FileRecordService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.compress.archivers.zip.Zip64Mode;
-import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -32,6 +31,7 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -106,11 +106,12 @@ public class FileRecordController {
      * @param response 响应对象
      * @param ids 待下载文件的 ID 列表
      */
-    @PostMapping("/download")
+    @GetMapping("/download")
     public void downloadFile(HttpServletResponse response,
-                             @RequestBody @NotEmpty(message = "请选择要下载的文件") List<BigInteger> ids) {
+                             @NotEmpty(message = "请选择要下载的文件") BigInteger[] ids) {
+        log.debug("ids: {}", Arrays.asList(ids));
         // 获取符合条件的文件记录列表
-        List<FileRecordEntity> fileRecords = fileRecordService.listFileRecordsByIds(ids);
+        List<FileRecordEntity> fileRecords = fileRecordService.listFileRecordsByIds(Arrays.asList(ids));
         // 文件记录为空, 直接返回
         if (CollectionUtil.isEmpty(fileRecords)) {
             throw new FileSharingException(ResultStatus.BAD_REQUEST.getCode(), "The file to download does not exist.");
@@ -131,8 +132,8 @@ public class FileRecordController {
         }
 
         try (ServletOutputStream out = response.getOutputStream()) {
+            // 设置响应体类型, 响应编码, 以及响应头
             response.reset();
-            response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
             response.setCharacterEncoding(StandardCharsets.UTF_8.toString());
             response.setHeader(Header.PRAGMA.toString(), "no-cache");
             response.setHeader(Header.CACHE_CONTROL.toString(), "no-cache");
@@ -141,22 +142,27 @@ public class FileRecordController {
             int size = downloadFiles.size();
             if (size == 1) {
                 // 单文件下载
+                // 设置响应头
+                response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
                 FileRecordEntity fileRecord = downloadFiles.get(0);
                 String filename = URLUtil.encode(fileRecord.getOriginalFilename(),
                         StandardCharsets.UTF_8).replace("\\+", "%20");
                 response.setHeader(Header.CONTENT_DISPOSITION.toString(), "attachment;filename=" + filename);
 
-                String uniqueFilename = fileRecord.getUniqueFilename();
-                File downloadFile = new File(uploadFilePath, uniqueFilename);
+                // 下载文件
+                File downloadFile = new File(uploadFilePath, fileRecord.getUniqueFilename());
                 out.write(FileUtil.readBytes(downloadFile));
             } else if (size > 1) {
-                // todo 多文件下载
-                try (ZipArchiveOutputStream zipOut = new ZipArchiveOutputStream(out)) {
-                    zipOut.setUseZip64(Zip64Mode.AsNeeded);
-                }
+                // 多文件下载
+                // 文件记录 ==> 文件
+                List<File> files = downloadFiles.stream()
+                        .map(fileRecord -> new File(uploadFilePath, fileRecord.getUniqueFilename()))
+                        .collect(Collectors.toList());
+                // ZIP 下载
+                ZipDownloadUtils.zipDownload(response, "file-sharing.zip", files);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("File download error.", e);
         }
     }
 
@@ -205,16 +211,28 @@ public class FileRecordController {
     /**
      * 文件搜索
      *
-     * @param query
+     * @param query 文件记录的查询条件类实例对象
      * @return 搜索结果
      */
     @GetMapping("/search")
-    public Result<PageInfo<CatalogFileVO>> searchFile(@RequestParam CatalogFileQuery query) {
-        PageInfo<CatalogFileVO> pageInfo = fileRecordService.getCatalogFilePage(query);
+    public Result<PageInfo<FileRecordVO>> searchFile(FileRecordQuery query) {
+        PageInfo<FileRecordVO> pageInfo = fileRecordService.getFileRecordPage(query);
+        // TODO: 2022/8/15 LocalDateTime 时间格式化
         return Result.ok(pageInfo);
     }
 
     // 文件浏览
 
-    // 文件分类 (是否涉及排序?)
+    /**
+     * 文件分类
+     *
+     * @param fileType 文件类型
+     * @return 分类结果
+     */
+    @GetMapping("/classify")
+    public Result<List<FileRecordVO>> classifyFile(@RequestParam String fileType) {
+        List<FileRecordVO> vos = fileRecordService.listFileRecordsByType(fileType);
+        return Result.ok(vos);
+    }
+
 }

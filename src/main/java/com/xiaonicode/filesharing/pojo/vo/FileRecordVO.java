@@ -18,7 +18,8 @@ public class FileRecordVO {
 
     private BigInteger catalogId;
 
-    private String catalogName;
+    /** 文件所在的目录路径 */
+    private CatalogVO[] catalogPaths;
 
     private String originalFilename;
 
@@ -28,6 +29,7 @@ public class FileRecordVO {
 
     private BigInteger creatorId;
 
+    /** 创建者名称 */
     private String username;
 
     private LocalDateTime createTime;

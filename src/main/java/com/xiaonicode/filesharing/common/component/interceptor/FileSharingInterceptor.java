@@ -10,4 +10,5 @@ import org.springframework.web.servlet.HandlerInterceptor;
  */
 public class FileSharingInterceptor implements HandlerInterceptor {
     // TODO: 2022/8/14 登录拦截
+    // TODO: 2022/8/15 文件类型拦截
 }

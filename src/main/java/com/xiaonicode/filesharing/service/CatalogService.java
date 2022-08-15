@@ -2,7 +2,9 @@ package com.xiaonicode.filesharing.service;
 
 import com.xiaonicode.filesharing.pojo.dto.RecycleBinDTO;
 import com.xiaonicode.filesharing.pojo.entity.CatalogEntity;
+import com.xiaonicode.filesharing.pojo.vo.CatalogVO;
 
+import java.math.BigInteger;
 import java.util.List;
 
 /**
@@ -35,5 +37,13 @@ public interface CatalogService {
      * @return true-操作成功; false-操作失败
      */
     boolean batchRecycleBin(RecycleBinDTO dto);
+
+    /**
+     * 根据文件所在的目录 ID, 获取文件所在的目录路径
+     *
+     * @param catalogId 文件所在的目录 ID
+     * @return 文件所在的目录路径
+     */
+    CatalogVO[] listCatalogPaths(BigInteger catalogId);
 
 }

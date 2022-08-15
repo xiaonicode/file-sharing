@@ -65,7 +65,7 @@ public class RecycleBinDTO {
                     return operateType;
                 }
             }
-            throw new FileSharingException("不支持的操作类型【" + operate + "】");
+            throw new FileSharingException("Unsupported operation type【" + operate + "】");
         }
     }
 

@@ -38,4 +38,4 @@ mybatis-plus:
 logging:
   # 指定日志级别
   level:
-    com.xiaonicode.filesharing.mapper: debug
+    com.xiaonicode.filesharing: debug

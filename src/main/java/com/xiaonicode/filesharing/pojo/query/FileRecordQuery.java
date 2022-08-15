@@ -3,13 +3,13 @@ package com.xiaonicode.filesharing.pojo.query;
 import lombok.Data;
 
 /**
- * 文件目录的查询条件类
+ * 文件记录的查询条件类
  *
  * @author xiaonicode
  * @createTime 2022-08-14
  */
 @Data
-public class CatalogFileQuery {
+public class FileRecordQuery {
 
     /** 关键字 */
     private String keyword;

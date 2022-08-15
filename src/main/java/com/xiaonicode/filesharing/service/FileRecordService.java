@@ -2,8 +2,8 @@ package com.xiaonicode.filesharing.service;
 
 import com.xiaonicode.filesharing.common.result.PageInfo;
 import com.xiaonicode.filesharing.pojo.entity.FileRecordEntity;
-import com.xiaonicode.filesharing.pojo.query.CatalogFileQuery;
-import com.xiaonicode.filesharing.pojo.vo.CatalogFileVO;
+import com.xiaonicode.filesharing.pojo.query.FileRecordQuery;
+import com.xiaonicode.filesharing.pojo.vo.FileRecordVO;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -50,11 +50,19 @@ public interface FileRecordService {
     boolean removeFileRecordById(BigInteger id);
 
     /**
-     * 分页查询文件目录
+     * 分页查询文件记录
      *
-     * @param query 文件目录的查询条件类的实例对象
+     * @param query 文件记录的查询条件类实例对象
      * @return 分页结果
      */
-    PageInfo<CatalogFileVO> getCatalogFilePage(CatalogFileQuery query);
+    PageInfo<FileRecordVO> getFileRecordPage(FileRecordQuery query);
+
+    /**
+     * 根据文件类型, 获取文件记录
+     *
+     * @param type 文件类型
+     * @return 文件记录列表
+     */
+    List<FileRecordVO> listFileRecordsByType(String type);
 
 }
